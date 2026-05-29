@@ -13,61 +13,78 @@
     <div class="loader"></div>
     <p id="msg">正在前往，請稍候...</p>
 
-    <script>
-        // 1. === 請替換成你的 Google Apps Script 網址 ===
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyukWNTiEnbzMmr87n90VoXki4MPXw050wrB4lSNB08cWB9xdGqWoI3J8zbF9O1oQlk/exec";
-        // 預設後備網址（萬一試算表找不到對應代號，跳轉去哪裡）
-        const DEFAULT_URL = "https://aiotfixer.github.io/"; 
+   <script>
+    // === 請替換成你的 Google Apps Script 網頁應用程式網址 ===
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyukWNTiEnbzMmr87n90VoXki4MPXw050wrB4lSNB08cWB9xdGqWoI3J8zbF9O1oQlk/exec";
+    // 預設後備網址（萬一出錯時的去處）
+    const DEFAULT_URL = "https://aiotfixer.github.io/"; 
 
-        // 2. 自動從網址列擷取「找不到的路徑」作為 Key
-        // 例如：https://xxx.github.io/fb -> pathname 是 "/fb" -> 轉換成 "fb"
-        const currentPath = window.location.pathname;
-        const targetKey = currentPath.replace(/^\/|\/$/g, ''); // 去除前後的斜線
+    const currentPath = window.location.pathname;
+    const targetKey = currentPath.replace(/^\/|\/$/g, ''); 
 
-        if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
-            // 如果是直接訪問首頁或異常，直接去預設網頁
-            window.location.href = DEFAULT_URL;
-        } else {
-            // 設定 3 秒安全防線，避免 Google 伺服器卡住
-            const fallbackTimeout = setTimeout(() => {
-                window.location.href = DEFAULT_URL;
-            }, 3000);
+    if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
+        window.location.href = DEFAULT_URL;
+    } else {
+        // 設定 4 秒安全防線：無論如何，4 秒內一定會把使用者帶離此頁
+        let hasRedirected = false;
+        const hardTimeout = setTimeout(() => {
+            if (!hasRedirected) {
+                hasRedirected = true;
+                window.location.replace(DEFAULT_URL);
+            }
+        }, 4000);
 
-            // 3. 向 Google Sheets 發送 GET 請求查詢網址
-            fetch(`${GAS_URL}?key=${targetKey}`)
-            .then(res => res.json())
-            .then(result => {
-                if (result.target) {
-                    // 4. 找到網址，發送反追蹤 POST 紀錄
-                    const trackingData = {
-                        label: targetKey,
-                        userAgent: navigator.userAgent,
-                        referrer: document.referrer || "直接輸入"
-                    };
+        // 步驟 1：向 Google Sheets 查詢目標網址
+        fetch(`${GAS_URL}?key=${encodeURIComponent(targetKey)}`)
+        .then(res => res.json())
+        .then(result => {
+            if (result.target) {
+                // 步驟 2：找到網址了，發送反追蹤點擊數據
+                const trackingData = {
+                    label: targetKey,
+                    userAgent: navigator.userAgent,
+                    referrer: document.referrer || "直接輸入"
+                };
 
-                    fetch(GAS_URL, {
-                        method: "POST",
-                        mode: "no-cors",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(trackingData)
-                    }).then(() => {
-                        clearTimeout(fallbackTimeout);
-                        window.location.replace(result.target); // 紀錄完畢，正式跳轉（使用 replace 讓上一頁不會卡住）
-                    });
-
-                } else {
-                    // 試算表裡沒有這個 Key，代表真的是一般的 404 錯誤
-                    clearTimeout(fallbackTimeout);
-                    document.getElementById('msg').innerText = "找不到對應的社團或網頁，即將返回首頁...";
-                    setTimeout(() => { window.location.href = DEFAULT_URL; }, 2000);
-                }
-            })
-            .catch(err => {
-                console.error("系統錯誤:", err);
-                clearTimeout(fallbackTimeout);
-                window.location.href = DEFAULT_URL;
-            });
-        }
+                // 使用 no-cors 模式發送 POST，避免被瀏覽器安全性阻擋
+                fetch(GAS_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(trackingData)
+                }).then(() => {
+                    // 步驟 3：紀錄發送完畢（或已發出），立刻執行跳轉
+                    if (!hasRedirected) {
+                        hasRedirected = true;
+                        clearTimeout(hardTimeout);
+                        window.location.replace(result.target);
+                    }
+                }).catch(() => {
+                    // 就算 POST 追蹤失敗，也要讓使用者跳轉
+                    if (!hasRedirected) {
+                        hasRedirected = true;
+                        clearTimeout(hardTimeout);
+                        window.location.replace(result.target);
+                    }
+                });
+            } else {
+                // Sheet 裡查無此關鍵字
+                clearTimeout(hardTimeout);
+                document.getElementById('msg').innerText = "找不到對應的社團網頁，即將返回...";
+                setTimeout(() => { window.location.href = DEFAULT_URL; }, 2000);
+            }
+        })
+        .catch(err => {
+            console.error("查詢失敗:", err);
+            // 查詢失敗時直接前往預設網址
+            if (!hasRedirected) {
+                hasRedirected = true;
+                clearTimeout(hardTimeout);
+                window.location.replace(DEFAULT_URL);
+            }
+        });
+    }
     </script>
 </body>
 </html>
+
