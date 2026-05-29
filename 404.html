@@ -14,66 +14,35 @@
     <p id="msg">正在確認社團網址，請稍候...</p>
 
     <script>
-        // === 1. 請替換成你的 Google Apps Script 網址 ===
-        const GAS_URL = "https://script.google.com/macros/s/AKfycbyukWNTiEnbzMmr87n90VoXki4MPXw050wrB4lSNB08cWB9xdGqWoI3J8zbF9O1oQlk/exec";
-        // 預設後備網址（萬一查不到代號時去哪）
-        const DEFAULT_URL = "https://aiotfixer.github.io/"; 
+    const GAS_URL = "https://script.google.com/macros/s/AKfycbyukWNTiEnbzMmr87n90VoXki4MPXw050wrB4lSNB08cWB9xdGqWoI3J8zbF9O1oQlk/exec"; // 你的 GAS 網址
+    const DEFAULT_URL = "https://aiotfixer.github.io/"; 
 
-        const currentPath = window.location.pathname;
-        const targetKey = currentPath.replace(/^\/|\/$/g, ''); 
+    const currentPath = window.location.pathname;
+    const targetKey = currentPath.replace(/^\/|\/$/g, ''); 
 
-        if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
-            window.location.href = DEFAULT_URL;
-        } else {
-            // 步驟 1：先向 Google Sheets 發送 GET 請求查詢目標網址
-            fetch(`${GAS_URL}?key=${encodeURIComponent(targetKey)}`)
-            .then(res => res.json())
-            .then(result => {
-                if (result.target) {
-                    
-                    // 要跳轉的目標網址
-                    const finalTarget = result.target;
-
-                    // 設置一個 0.5 秒的極速定時器
-                    // 不管 POST 紀錄有沒有傳回成功訊息，0.5 秒後時間一到「絕對強制跳轉」
-                    const forceRedirect = setTimeout(() => {
-                        window.location.replace(finalTarget);
-                    }, 500);
-
-                    const trackingData = {
-                        label: targetKey,
-                        userAgent: navigator.userAgent,
-                        referrer: document.referrer || "直接輸入"
-                    };
-
-                    fetch(GAS_URL, {
-                        method: "POST",
-                        mode: "no-cors", // 允許跨網域默默傳送
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(trackingData)
-                    })
-                    .then(() => {
-                        // 如果網路很快，POST 在 0.5 秒內完成了，就清除定時器提早跳轉
-                        clearTimeout(forceRedirect);
-                        window.location.replace(finalTarget);
-                    })
-                    .catch(() => {
-                        // 就算 POST 失敗被瀏覽器擋掉，也清除定時器立刻跳轉
-                        clearTimeout(forceRedirect);
-                        window.location.replace(finalTarget);
-                    });
-
-                } else {
-                    // Sheet 網址對照表裡找不到這個 Key
-                    document.getElementById('msg').innerText = "找不到對應的社團網頁，即將返回...";
-                    setTimeout(() => { window.location.href = DEFAULT_URL; }, 2000);
-                }
-            })
-            .catch(err => {
-                console.error("查詢失敗:", err);
-                window.location.replace(DEFAULT_URL);
-            });
-        }
-    </script>
+    if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
+        window.location.href = DEFAULT_URL;
+    } else {
+        // 把 404 畫面上的字體提示拔掉或隱藏，讓視覺看起來更快
+        
+        // 封裝瀏覽器資訊，直接帶在 GET 網址參數中
+        const ua = encodeURIComponent(navigator.userAgent);
+        const ref = encodeURIComponent(document.referrer || "直接輸入");
+        
+        // 發送單一極速請求
+        fetch(`${GAS_URL}?key=${encodeURIComponent(targetKey)}&ua=${ua}&ref=${ref}`)
+        .then(res => res.json())
+        .then(result => {
+            if (result.target) {
+                window.location.replace(result.target); // 秒轉！
+            } else {
+                window.location.href = DEFAULT_URL;
+            }
+        })
+        .catch(() => {
+            window.location.replace(DEFAULT_URL);
+        });
+    }
+</script>
 </body>
 </html>
