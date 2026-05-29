@@ -28,10 +28,10 @@
             // 如果是直接訪問首頁或異常，直接去預設網頁
             window.location.href = DEFAULT_URL;
         } else {
-            // 設定 3 秒安全防線，避免 Google 伺服器卡住
+            // 設定 1.5 秒安全防線，避免 Google 伺服器卡住
             const fallbackTimeout = setTimeout(() => {
                 window.location.href = DEFAULT_URL;
-            }, 3000);
+            }, 1500);
 
             // 3. 向 Google Sheets 發送 GET 請求查詢網址
             fetch(`${GAS_URL}?key=${targetKey}`)
