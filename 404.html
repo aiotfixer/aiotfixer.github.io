@@ -31,7 +31,7 @@
             .then(result => {
                 if (result.target) {
                     
-                    // 【核心修正】準備好要跳轉的目標網址
+                    // 要跳轉的目標網址
                     const finalTarget = result.target;
 
                     // 設置一個 0.5 秒的極速定時器
@@ -40,7 +40,6 @@
                         window.location.replace(finalTarget);
                     }, 500);
 
-                    // 步驟 2：背景默默發送反追蹤點擊數據
                     const trackingData = {
                         label: targetKey,
                         userAgent: navigator.userAgent,
