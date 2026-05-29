@@ -14,34 +14,36 @@
     <p id="msg">正在確認社團網址，請稍候...</p>
 
     <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyukWNTiEnbzMmr87n90VoXki4MPXw050wrB4lSNB08cWB9xdGqWoI3J8zbF9O1oQlk/exec"; // 你的 GAS 網址
-    const DEFAULT_URL = "https://aiotfixer.github.io/"; 
+    const GAS_URL = "https://script.google.com/macros/s/XXXXXX/exec";
+    const DEFAULT_URL = "https://github.com/"; 
 
     const currentPath = window.location.pathname;
-    const targetKey = currentPath.replace(/^\/|\/$/g, ''); 
+    const targetKey = currentPath.replace(/^\/|\/$/g, '').toLowerCase(); 
 
     if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
         window.location.href = DEFAULT_URL;
     } else {
-        // 把 404 畫面上的字體提示拔掉或隱藏，讓視覺看起來更快
-        
-        // 封裝瀏覽器資訊，直接帶在 GET 網址參數中
+        const cachedUrl = localStorage.getItem(`url_${targetKey}`);
         const ua = encodeURIComponent(navigator.userAgent);
         const ref = encodeURIComponent(document.referrer || "直接輸入");
-        
-        // 發送單一極速請求
-        fetch(`${GAS_URL}?key=${encodeURIComponent(targetKey)}&ua=${ua}&ref=${ref}`)
-        .then(res => res.json())
-        .then(result => {
-            if (result.target) {
-                window.location.replace(result.target); // 秒轉！
-            } else {
-                window.location.href = DEFAULT_URL;
-            }
-        })
-        .catch(() => {
-            window.location.replace(DEFAULT_URL);
-        });
+        const fetchUrl = `${GAS_URL}?key=${encodeURIComponent(targetKey)}&ua=${ua}&ref=${ref}`;
+
+        if (cachedUrl) {
+            window.location.replace(cachedUrl);
+            fetch(fetchUrl, { keepalive: true });
+        } else {
+            fetch(fetchUrl)
+            .then(res => res.json())
+            .then(result => {
+                if (result.target) {
+                    localStorage.setItem(`url_${targetKey}`, result.target);
+                    window.location.replace(result.target);
+                } else {
+                    window.location.replace(DEFAULT_URL);
+                }
+            })
+            .catch(() => window.location.replace(DEFAULT_URL));
+        }
     }
 </script>
 </body>
