@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>安全導向中...</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding-top: 50px; color: #333; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3498db; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 20px auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="loader"></div>
+    <p id="msg">正在前往，請稍候...</p>
+
+    <script>
+        // 1. === 請替換成你的 Google Apps Script 網址 ===
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyukWNTiEnbzMmr87n90VoXki4MPXw050wrB4lSNB08cWB9xdGqWoI3J8zbF9O1oQlk/exec";
+        // 預設後備網址（萬一試算表找不到對應代號，跳轉去哪裡）
+        const DEFAULT_URL = "https://github.com/"; 
+
+        // 2. 自動從網址列擷取「找不到的路徑」作為 Key
+        // 例如：https://xxx.github.io/fb -> pathname 是 "/fb" -> 轉換成 "fb"
+        const currentPath = window.location.pathname;
+        const targetKey = currentPath.replace(/^\/|\/$/g, ''); // 去除前後的斜線
+
+        if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
+            // 如果是直接訪問首頁或異常，直接去預設網頁
+            window.location.href = DEFAULT_URL;
+        } else {
+            // 設定 3 秒安全防線，避免 Google 伺服器卡住
+            const fallbackTimeout = setTimeout(() => {
+                window.location.href = DEFAULT_URL;
+            }, 3000);
+
+            // 3. 向 Google Sheets 發送 GET 請求查詢網址
+            fetch(`${GAS_URL}?key=${targetKey}`)
+            .then(res => res.json())
+            .then(result => {
+                if (result.target) {
+                    // 4. 找到網址，發送反追蹤 POST 紀錄
+                    const trackingData = {
+                        label: targetKey,
+                        userAgent: navigator.userAgent,
+                        referrer: document.referrer || "直接輸入"
+                    };
+
+                    fetch(GAS_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(trackingData)
+                    }).then(() => {
+                        clearTimeout(fallbackTimeout);
+                        window.location.replace(result.target); // 紀錄完畢，正式跳轉（使用 replace 讓上一頁不會卡住）
+                    });
+
+                } else {
+                    // 試算表裡沒有這個 Key，代表真的是一般的 404 錯誤
+                    clearTimeout(fallbackTimeout);
+                    document.getElementById('msg').innerText = "找不到對應的社團或網頁，即將返回首頁...";
+                    setTimeout(() => { window.location.href = DEFAULT_URL; }, 2000);
+                }
+            })
+            .catch(err => {
+                console.error("系統錯誤:", err);
+                clearTimeout(fallbackTimeout);
+                window.location.href = DEFAULT_URL;
+            });
+        }
+    </script>
+</body>
+</html>
