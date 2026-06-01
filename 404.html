@@ -28,7 +28,7 @@
             
             const fallback = setTimeout(() => {
                 window.location.replace(DEFAULT_URL);
-            }, 3000);
+            }, 5000);
 
             fetch(`${GAS_URL}?key=${encodeURIComponent(targetKey)}&ua=${ua}&ref=${ref}`)
             .then(res => res.json())
