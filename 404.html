@@ -14,37 +14,39 @@
     <p id="msg">正在確認社團網址，請稍候...</p>
 
     <script>
-    const GAS_URL = "https://script.google.com/macros/s/AKfycbyukWNTiEnbzMmr87n90VoXki4MPXw050wrB4lSNB08cWB9xdGqWoI3J8zbF9O1oQlk/exec";
-    const DEFAULT_URL = "https://aiotfixer.github.io/"; 
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbyukWNTiEnbzMmr87n90VoXki4MPXw050wrB4lSNB08cWB9xdGqWoI3J8zbF9O1oQlk/exec";
+        const DEFAULT_URL = "https://aiotfixer.github.io/"; 
 
-    const currentPath = window.location.pathname;
-    const targetKey = currentPath.replace(/^\/|\/$/g, '').toLowerCase(); 
+        const currentPath = window.location.pathname;
+        const targetKey = currentPath.replace(/^\/|\/$/g, ''); 
 
-    if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
-        window.location.href = DEFAULT_URL;
-    } else {
-        const cachedUrl = localStorage.getItem(`url_${targetKey}`);
-        const ua = encodeURIComponent(navigator.userAgent);
-        const ref = encodeURIComponent(document.referrer || "直接輸入");
-        const fetchUrl = `${GAS_URL}?key=${encodeURIComponent(targetKey)}&ua=${ua}&ref=${ref}`;
-
-        if (cachedUrl) {
-            window.location.replace(cachedUrl);
-            fetch(fetchUrl, { keepalive: true });
+        if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
+            window.location.href = DEFAULT_URL;
         } else {
-            fetch(fetchUrl)
+            const ua = encodeURIComponent(navigator.userAgent);
+            const ref = encodeURIComponent(document.referrer || "直接輸入");
+            
+            const fallback = setTimeout(() => {
+                window.location.replace(DEFAULT_URL);
+            }, 3000);
+
+            fetch(`${GAS_URL}?key=${encodeURIComponent(targetKey)}&ua=${ua}&ref=${ref}`)
             .then(res => res.json())
             .then(result => {
+                clearTimeout(fallback);
                 if (result.target) {
-                    localStorage.setItem(`url_${targetKey}`, result.target);
                     window.location.replace(result.target);
                 } else {
-                    window.location.replace(DEFAULT_URL);
+                    document.getElementById('msg').innerText = "找不到對應的社團網頁...";
+                    setTimeout(() => { window.location.replace(DEFAULT_URL); }, 1500);
                 }
             })
-            .catch(() => window.location.replace(DEFAULT_URL));
+            .catch(err => {
+                console.error("系統錯誤:", err);
+                clearTimeout(fallback);
+                window.location.replace(DEFAULT_URL);
+            });
         }
-    }
-</script>
+    </script>
 </body>
 </html>
