@@ -52,23 +52,26 @@
             
             margin: 0 auto 16px;
             display: block;
-            
-            background-color: #1f2937; 
-            
             padding: 0; 
             box-sizing: border-box;
             transition: all 0.3s ease;
         
-            border: 2px solid rgba(99, 102, 241, 0.2);
-            box-shadow: 0 12px 24px -4px rgba(99, 102, 241, 0.3);
+            background-color: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            
+            border: 1px solid rgba(255, 255, 255, 0.2); 
+            
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2),
+                        0 0 8px 1px rgba(255, 255, 255, 0.1); 
         }
         
-        @media (prefers-color-scheme: dark) {
-            .logo-image {
-                border: 2px solid rgba(99, 102, 241, 0.4);
-                box-shadow: 0 16px 32px -6px rgba(0, 0, 0, 0.7),
-                            0 0 12px 0px rgba(99, 102, 241, 0.2);
-            }
+        .logo-image:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.25),
+                        0 0 12px 2px rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
         }
 
         h1 {
