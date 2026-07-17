@@ -45,18 +45,25 @@
         .logo-image {
             width: 128px;
             height: 128px;
-            object-fit: contain;
+            
+            object-fit: cover; 
             border-radius: 50%;
             margin: 0 auto 16px;
             display: block;
             
-            /* background-color: #ffffff;  */
-            
-            padding: 2px; 
+            padding: 0; 
             box-sizing: border-box;
+            transition: all 0.3s ease;
         
-            border: 2px solid rgba(52, 152, 219, 0.25);
-            box-shadow: 0 10px 25px -5px rgba(52, 152, 219, 0.2);
+            border: none;
+            box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.25);
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            .logo-image {
+                box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.6), 
+                            0 0 0 1px rgba(99, 102, 241, 0.2);
+            }
         }
 
         h1 {
