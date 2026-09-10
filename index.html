@@ -169,11 +169,15 @@
         <div class="links-group">
             
             <a href="./fb" class="link-card">
-                Facebook 官方粉絲專頁
+                Facebook 粉絲專頁
             </a>
             
             <a href="./ig" class="link-card">
                 Instagram 精彩日常
+            </a>
+
+            <a href="./threads" class="link-card">
+                Threads 靈感筆記
             </a>
             
             <a href="./latest" class="link-card">
@@ -181,12 +185,15 @@
             </a>
             
         </div>
-
-        <footer>
-            &copy; 2026 北科智慧家電維修社. All Rights Reserved.
-        </footer>
         
     </div>
-
+    
+    <footer>
+            &copy; <span id="year"></span> 北科智慧家電維修社. All Rights Reserved.
+    </footer>
+    
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
