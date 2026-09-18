@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <title>跳轉中... - NTUT AIoTFixer</title>
-    <meta name="description" content="NTUT AIoTFixer 短網址跳轉系統。國立臺北科技大學智慧家電研究社專屬連結路由服務。">
+    <meta name="description" content="404 Not Found">
     
     <!-- 網頁 Icon 與 Manifest 設定 -->
     <link rel="icon" type="image/svg+xml" href="./assets/favicon/favicon.svg">
@@ -22,7 +22,7 @@
             --card-bg: #1e293b;
             --text-color: #f8fafc;
             --text-muted: #94a3b8;
-            --error-color: #ef4444; /* 新增錯誤訊息顏色 */
+            --error-color: #ef4444;
         }
         * {
             box-sizing: border-box;
@@ -156,8 +156,9 @@
 <body>
     <div class="container">
         <div class="profile">
-            <img src="./assets/Logo.svg" class="logo-image" alt="Logo">
-            <h1>系統路由跳轉</h1>
+            <img src="./assets/favicon/Logo.svg" class="logo-image" alt="Logo">
+            <!-- 加入 id 讓 JavaScript 可以動態修改此處文字 -->
+            <h1 id="main-title">系統路由跳轉</h1>
             <p class="subtitle">NTUT AIoTFixer</p>
         </div>
         
@@ -184,23 +185,21 @@
         const currentPath = window.location.pathname;
         const targetKey = currentPath.replace(/^\/|\/$/g, '');
 
-        // 處理 404 找不到網頁時的介面更新，不再自動跳轉
         function showNotFoundError() {
-            document.title = "404 找不到網頁 - NTUT AIoTFixer"; // 更新網頁標題
-            document.getElementById('loader').style.display = 'none'; // 隱藏轉圈動畫
-            document.getElementById('error-title').style.display = 'block'; // 顯示 404 大字
-            document.getElementById('msg').innerText = "抱歉，找不到您請求的頁面或短網址。"; // 更新提示訊息
-            document.getElementById('home-btn').style.display = 'inline-block'; // 顯示回到首頁按鈕
+            document.title = "404 找不到網頁 - NTUT AIoTFixer";
+            document.getElementById('main-title').innerText = "找不到頁面"; // 隱藏路由跳轉字樣
+            document.getElementById('loader').style.display = 'none';
+            document.getElementById('error-title').style.display = 'block'; 
+            document.getElementById('msg').innerText = "抱歉，找不到您請求的頁面或短網址。"; 
+            document.getElementById('home-btn').style.display = 'inline-block';
         }
 
-        // 如果在根目錄或原本的 index/404 頁面，直接跳轉首頁
         if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
             window.location.href = DEFAULT_URL;
         } else {
             const ua = encodeURIComponent(navigator.userAgent);
             const ref = encodeURIComponent(document.referrer || "");
             
-            // 設定 5 秒的 Fetch 逾時處理
             const fallback = setTimeout(() => {
                 showNotFoundError();
             }, 5000);
@@ -208,17 +207,17 @@
             fetch(`${GAS_URL}?key=${encodeURIComponent(targetKey)}&ua=${ua}&ref=${ref}`)
             .then(res => res.json())
             .then(result => {
-                clearTimeout(fallback); // 成功回應後取消逾時
+                clearTimeout(fallback); 
                 if (result.target) {
-                    window.location.replace(result.target); // 找到短網址，執行跳轉
+                    window.location.replace(result.target); 
                 } else {
-                    showNotFoundError(); // 回傳無目標，顯示 404
+                    showNotFoundError(); 
                 }
             })
             .catch(err => {
                 console.error("連線錯誤:", err);
-                clearTimeout(fallback); // 發生錯誤時取消逾時
-                showNotFoundError(); // 顯示 404
+                clearTimeout(fallback);
+                showNotFoundError(); 
             });
         }
     </script>
