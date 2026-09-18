@@ -8,8 +8,8 @@
     <meta name="description" content="404 Not Found">
     
     <!-- 網頁 Icon 與 Manifest 設定 -->
-    <link rel="icon" type="image/svg+xml" href="./assets/favicon/favicon.svg?v=2">
-    <link rel="icon" href="./assets/favicon/favicon.ico" sizes="any">
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon/favicon.svg?v=3">
+    <link rel="alternate icon" href="./assets/favicon/favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="./assets/favicon/apple-touch-icon.png">
@@ -112,6 +112,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            width: 100%;
         }
         #error-title {
             display: none;
@@ -125,25 +126,31 @@
             font-size: 1rem;
             font-weight: 500;
         }
-        /* 回到首頁按鈕樣式 */
+        /* 回到首頁按鈕樣式 (比照首頁 link-card 風格) */
         .home-btn {
-            display: none; 
-            background-color: #2563eb;
-            color: #ffffff;
+            display: none; /* 預設隱藏，由 JS 控制顯示 */
+            width: 100%;
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            border-radius: 12px;
+            color: var(--text-color);
             text-decoration: none;
-            padding: 12px 28px;
-            border-radius: 8px;
-            font-weight: 600;
+            font-weight: 500;
             font-size: 1.05rem;
             transition: all 0.25s ease;
-            border: 1px solid #3b82f6;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             margin-top: 8px;
         }
         .home-btn:hover {
             transform: translateY(-2px);
-            background-color: #1d4ed8;
-            box-shadow: 0 8px 15px -5px rgba(37, 99, 235, 0.5);
+            background-color: #2563eb;
+            border-color: #3b82f6;
+            box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5);
         }
         footer {
             margin-top: 48px;
@@ -156,7 +163,7 @@
 <body>
     <div class="container">
         <div class="profile">
-            <img src="./assets/Logo.svg" class="logo-image" alt="Logo">
+            <img src="./assets/favicon/Logo.svg" class="logo-image" alt="Logo">
             <h1>北科智慧家電維修社</h1>
             <p class="subtitle">NTUT AIoTFixer</p>
         </div>
@@ -186,11 +193,12 @@
 
         function showNotFoundError() {
             document.title = "404 找不到網頁 - NTUT AIoTFixer";
-            // 移除了修改 <h1> 的邏輯，保持 "NTUT AIoTFixer"
             document.getElementById('loader').style.display = 'none';
             document.getElementById('error-title').style.display = 'block'; 
             document.getElementById('msg').innerText = "抱歉，找不到您請求的頁面或短網址。"; 
-            document.getElementById('home-btn').style.display = 'inline-block';
+            
+            // 使用 flex 顯示，確保樣式與首頁 link-card 完全一致
+            document.getElementById('home-btn').style.display = 'flex';
         }
 
         if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
