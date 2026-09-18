@@ -2,9 +2,19 @@
 <html lang="zh-TW">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>跳轉中... - NTUT AIoTFixer</title>
+    <meta name="description" content="NTUT AIoTFixer 短網址跳轉系統。國立臺北科技大學智慧家電研究社專屬連結路由服務。">
+    
+    <!-- 網頁 Icon 與 Manifest 設定 -->
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon/favicon.svg">
+    <link rel="icon" href="./assets/favicon/favicon.ico" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="./assets/favicon/site.webmanifest">
+    
     <style>
         :root {
             --primary-color: #3498db;
@@ -12,6 +22,7 @@
             --card-bg: #1e293b;
             --text-color: #f8fafc;
             --text-muted: #94a3b8;
+            --error-color: #ef4444; /* 新增錯誤訊息顏色 */
         }
         * {
             box-sizing: border-box;
@@ -71,34 +82,68 @@
             color: var(--text-muted);
             font-size: 0.95rem;
         }
-        /* 載入轉圈動畫與訊息外觀 */
+        /* 狀態卡片樣式 */
         .status-card {
             background-color: var(--card-bg);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 24px;
+            padding: 32px 24px;
             border-radius: 12px;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 16px;
+            gap: 20px;
         }
+        /* 載入轉圈動畫 */
         .loader {
             border: 4px solid rgba(255, 255, 255, 0.1);
             border-top: 4px solid var(--primary-color);
             border-radius: 50%;
-            width: 36px;
-            height: 36px;
+            width: 40px;
+            height: 40px;
             animation: spin 1s linear infinite;
         }
         @keyframes spin { 
             0% { transform: rotate(0deg); } 
             100% { transform: rotate(360deg); } 
         }
+        /* 狀態文字與錯誤文字 */
+        #msg-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        #error-title {
+            display: none;
+            color: var(--error-color);
+            font-size: 1.75rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
         #msg {
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 500;
+        }
+        /* 回到首頁按鈕樣式 */
+        .home-btn {
+            display: none; 
+            background-color: #2563eb;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            transition: all 0.25s ease;
+            border: 1px solid #3b82f6;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-top: 8px;
+        }
+        .home-btn:hover {
+            transform: translateY(-2px);
+            background-color: #1d4ed8;
+            box-shadow: 0 8px 15px -5px rgba(37, 99, 235, 0.5);
         }
         footer {
             margin-top: 48px;
@@ -117,8 +162,12 @@
         </div>
         
         <div class="status-card">
-            <div class="loader"></div>
-            <p id="msg">正在解析網址並跳轉...</p>
+            <div class="loader" id="loader"></div>
+            <div id="msg-container">
+                <div id="error-title">404 Not Found</div>
+                <p id="msg">正在解析網址並跳轉...</p>
+            </div>
+            <a href="https://aiotfixer.github.io/" class="home-btn" id="home-btn">回到首頁</a>
         </div>
 
         <footer>
@@ -135,31 +184,41 @@
         const currentPath = window.location.pathname;
         const targetKey = currentPath.replace(/^\/|\/$/g, '');
 
+        // 處理 404 找不到網頁時的介面更新，不再自動跳轉
+        function showNotFoundError() {
+            document.title = "404 找不到網頁 - NTUT AIoTFixer"; // 更新網頁標題
+            document.getElementById('loader').style.display = 'none'; // 隱藏轉圈動畫
+            document.getElementById('error-title').style.display = 'block'; // 顯示 404 大字
+            document.getElementById('msg').innerText = "抱歉，找不到您請求的頁面或短網址。"; // 更新提示訊息
+            document.getElementById('home-btn').style.display = 'inline-block'; // 顯示回到首頁按鈕
+        }
+
+        // 如果在根目錄或原本的 index/404 頁面，直接跳轉首頁
         if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
             window.location.href = DEFAULT_URL;
         } else {
             const ua = encodeURIComponent(navigator.userAgent);
             const ref = encodeURIComponent(document.referrer || "");
             
+            // 設定 5 秒的 Fetch 逾時處理
             const fallback = setTimeout(() => {
-                window.location.replace(DEFAULT_URL);
+                showNotFoundError();
             }, 5000);
 
             fetch(`${GAS_URL}?key=${encodeURIComponent(targetKey)}&ua=${ua}&ref=${ref}`)
             .then(res => res.json())
             .then(result => {
-                clearTimeout(fallback);
+                clearTimeout(fallback); // 成功回應後取消逾時
                 if (result.target) {
-                    window.location.replace(result.target);
+                    window.location.replace(result.target); // 找到短網址，執行跳轉
                 } else {
-                    document.getElementById('msg').innerText = "找不到對應的短網址，即將返回首頁...";
-                    setTimeout(() => { window.location.replace(DEFAULT_URL); }, 1500);
+                    showNotFoundError(); // 回傳無目標，顯示 404
                 }
             })
-            .thenCatch(err => {
+            .catch(err => {
                 console.error("連線錯誤:", err);
-                clearTimeout(fallback);
-                window.location.replace(DEFAULT_URL);
+                clearTimeout(fallback); // 發生錯誤時取消逾時
+                showNotFoundError(); // 顯示 404
             });
         }
     </script>
