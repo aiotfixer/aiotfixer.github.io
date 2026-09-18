@@ -157,8 +157,7 @@
     <div class="container">
         <div class="profile">
             <img src="./assets/Logo.svg" class="logo-image" alt="Logo">
-            <!-- 加入 id 讓 JavaScript 可以動態修改此處文字 -->
-            <h1 id="main-title">系統路由跳轉</h1>
+            <h1>北科智慧家電研究社</h1>
             <p class="subtitle">NTUT AIoTFixer</p>
         </div>
         
@@ -187,7 +186,7 @@
 
         function showNotFoundError() {
             document.title = "404 找不到網頁 - NTUT AIoTFixer";
-            document.getElementById('main-title').innerText = "找不到頁面"; // 隱藏路由跳轉字樣
+            // 移除了修改 <h1> 的邏輯，保持 "NTUT AIoTFixer"
             document.getElementById('loader').style.display = 'none';
             document.getElementById('error-title').style.display = 'block'; 
             document.getElementById('msg').innerText = "抱歉，找不到您請求的頁面或短網址。"; 
