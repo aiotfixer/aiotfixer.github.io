@@ -7,23 +7,24 @@ document.addEventListener("DOMContentLoaded", () => {
     const GAS_URL = "https://script.google.com/macros/s/AKfycbyukWNTiEnbzMmr87n90VoXki4MPXw050wrB4lSNB08cWB9xdGqWoI3J8zbF9O1oQlk/exec";
     const DEFAULT_URL = "https://aiotfixer.github.io/";
 
+    // 解決子目錄路徑解析問題：永遠只取網址最後一段
     const currentPath = window.location.pathname;
-    const targetKey = currentPath.replace(/^\/|\/$/g, '');
+    const pathSegments = currentPath.split('/').filter(segment => segment.trim() !== '');
+    const targetKey = pathSegments.length > 0 ? pathSegments[pathSegments.length - 1] : "";
 
     function showNotFoundError() {
-        const lang = document.documentElement.lang || "zh-TW";
-        document.title = lang === "zh-TW" ? "404 找不到網頁 - NTUT AIoTFixer" : "404 Not Found - NTUT AIoTFixer";
-        
         document.getElementById('loader').style.display = 'none';
         document.getElementById('error-title').style.display = 'block'; 
         
         const msgEl = document.getElementById('msg');
         msgEl.setAttribute("data-i18n", "notFoundText");
+        document.getElementById('home-btn').style.display = 'flex';
+
+        // 呼叫 i18n 強制更新網頁標題 (此時 error-title 已顯示為 block，標題會自動切換為 404)
         if (typeof window.setLanguage === "function") {
+            const lang = document.documentElement.lang || "zh-TW";
             window.setLanguage(lang);
         }
-        
-        document.getElementById('home-btn').style.display = 'flex';
     }
 
     if (!targetKey || targetKey === "index.html" || targetKey === "404.html") {
