@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self'; script-src 'self'; connect-src 'self' https://script.google.com;">
+    
+    <title>跳轉中... - NTUT AIoTFixer</title>
+    <meta name="robots" content="noindex, nofollow">
+    
+    <link rel="icon" href="./assets/favicon/favicon.ico" sizes="48x48">
+    <link rel="icon" type="image/svg+xml" href="./assets/favicon/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="./assets/favicon/site.webmanifest">
+    
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/404.css">
+    
+    <script src="./js/i18n.js" defer></script>
+    <script src="./js/404.js" defer></script>
+</head>
+<body>
+    <button id="lang-toggle" class="lang-toggle-btn" aria-label="切換語言 / Toggle Language" data-i18n="langToggle">🌐 English</button>
+
+    <main class="container">
+        <header class="profile">
+            <img src="./assets/Logo.svg" class="logo-image" alt="北科智慧家電維修社官方標誌">
+            <h1 data-i18n="clubName">北科智慧家電維修社</h1>
+            <p class="subtitle">NTUT AIoTFixer</p>
+        </header>
+        
+        <div class="status-card" aria-live="polite" aria-atomic="true">
+            <div class="loader" id="loader" role="status" aria-label="載入中"></div>
+            <div id="msg-container">
+                <div id="error-title" role="heading" aria-level="2">404 Not Found</div>
+                <p id="msg" data-i18n="redirecting">正在解析網址並跳轉...</p>
+            </div>
+            <a href="https://aiotfixer.github.io/" class="home-btn" id="home-btn" aria-label="返回首頁" data-i18n="backHome">回到首頁</a>
+        </div>
+
+        <footer>
+            &copy; <span id="year"></span> NTUT AIoTFixer. All Rights Reserved.
+        </footer>
+    </main>
+</body>
+</html>
