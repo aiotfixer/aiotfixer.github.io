@@ -1,13 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 285.74997 285.74997" width="1080" height="1080">
   <style>
-    /* 預設（淺色模式）：背景白、線條黑 */
-    .bg-shape { fill: #ffffff; }
-    .icon-stroke { stroke: #000000; }
+    /* 預設（淺色模式）：背景黑、線條白 */
+    .bg-shape { fill: #000000; }
+    .icon-stroke { stroke: #ffffff; }
     
-    /* 深色模式：背景黑、線條白 */
+    /* 深色模式：背景白、線條黑 */
     @media (prefers-color-scheme: dark) {
-      .bg-shape { fill: #000000; }
-      .icon-stroke { stroke: #ffffff; }
+      .bg-shape { fill: #ffffff; }
+      .icon-stroke { stroke: #000000; }
     }
   </style>
   <g transform="translate(-99.50433,-53.268061)">
