@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self'; script-src 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' https://script.google.com https://script.googleusercontent.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com;">
     
     <title>NTUT AIoTFixer | 北科智慧家電維修社</title>
     <meta name="description" content="北科智慧家電維修社 (NTUT AIoTFixer) 官方網站，提供社團最新活動公告、社群平台連結與相關資訊。">
@@ -22,12 +22,15 @@
     <link rel="apple-touch-icon" sizes="180x180" href="./assets/favicon/apple-touch-icon.png">
     <link rel="manifest" href="./assets/favicon/site.webmanifest">
     
+    <!-- 預先載入 Logo -->
     <link rel="preload" href="./assets/Logo.svg" as="image" type="image/svg+xml">
     
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/index.css">
+    <link rel="stylesheet" href="./css/404.css"> <!-- 引入狀態卡片樣式供 Hash 路由使用 -->
     
     <script src="./js/i18n.js" defer></script>
+    <script src="./js/router.js" defer></script>
     <script src="./js/index.js" defer></script>
 </head>
 <body>
@@ -40,20 +43,33 @@
             <p class="subtitle" aria-label="英文社名">NTUT AIoTFixer</p>
         </header>
 
-        <nav class="links-group" aria-label="社團對外連結">
-            <a href="https://www.facebook.com/AIoTFixer" class="link-card" target="_blank" rel="noopener noreferrer">
-                <span data-i18n="fb">Facebook 粉絲專頁</span>
-            </a>
-            <a href="https://www.instagram.com/ntut.aiotfixer/" class="link-card" target="_blank" rel="noopener noreferrer">
-                <span data-i18n="ig">Instagram 精彩日常</span>
-            </a>
-            <a href="https://www.threads.com/@ntut.aiotfixer" class="link-card" target="_blank" rel="noopener noreferrer">
-                <span data-i18n="threads">Threads 靈感筆記</span>
-            </a>
-            <a href="./latest" class="link-card">
-                <span data-i18n="apply">活動報名</span>
-            </a>
-        </nav>
+        <!-- 首頁連結介面 -->
+        <div id="home-content">
+            <nav class="links-group" aria-label="社團對外連結">
+                <a href="https://www.facebook.com/AIoTFixer" class="link-card" target="_blank" rel="noopener noreferrer">
+                    <span data-i18n="fb">Facebook 粉絲專頁</span>
+                </a>
+                <a href="https://www.instagram.com/ntut.aiotfixer/" class="link-card" target="_blank" rel="noopener noreferrer">
+                    <span data-i18n="ig">Instagram 精彩日常</span>
+                </a>
+                <a href="https://www.threads.com/@ntut.aiotfixer" class="link-card" target="_blank" rel="noopener noreferrer">
+                    <span data-i18n="threads">Threads 靈感筆記</span>
+                </a>
+                <a href="./latest" class="link-card">
+                    <span data-i18n="apply">活動報名</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- 轉址狀態介面 (預設隱藏，觸發 Hash 時顯示) -->
+        <div id="router-content" class="status-card" style="display: none;" aria-live="polite" aria-atomic="true">
+            <div class="loader" id="loader" role="status" aria-label="載入中"></div>
+            <div id="msg-container">
+                <div id="error-title" role="heading" aria-level="2" style="display: none;">404 Not Found</div>
+                <p id="msg" data-i18n="redirecting">正在解析網址並跳轉...</p>
+            </div>
+            <a href="https://aiotfixer.github.io/" class="home-btn" id="home-btn" aria-label="返回首頁" data-i18n="backHome" style="display: none;">回到首頁</a>
+        </div>
         
         <footer>
             &copy; <span id="year"></span> NTUT AIoTFixer. All Rights Reserved.
