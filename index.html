@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' https://script.google.com https://script.googleusercontent.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com;">
+    <!-- 💡 CSP 更新：加入 style-src https://fonts.googleapis.com 與 font-src 'self' https://fonts.gstatic.com -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'self' https://script.google.com https://script.googleusercontent.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com;">
     
     <title>NTUT AIoTFixer | 北科智慧家電維修社</title>
     <meta name="description" content="北科智慧家電維修社 (NTUT AIoTFixer) 官方網站，提供社團最新活動公告、社群平台連結與相關資訊。">
@@ -25,9 +26,14 @@
     <!-- 預先載入 Logo -->
     <link rel="preload" href="./assets/Logo.svg" as="image" type="image/svg+xml">
     
+    <!-- 💡 效能優化：利用 preconnect 加速 Google Fonts 載入 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/index.css">
-    <link rel="stylesheet" href="./css/404.css"> <!-- 引入狀態卡片樣式供 Hash 路由使用 -->
+    <link rel="stylesheet" href="./css/404.css">
     
     <script src="./js/i18n.js" defer></script>
     <script src="./js/router.js" defer></script>
@@ -43,7 +49,6 @@
             <p class="subtitle" aria-label="英文社名">NTUT AIoTFixer</p>
         </header>
 
-        <!-- 首頁連結介面 -->
         <div id="home-content">
             <nav class="links-group" aria-label="社團對外連結">
                 <a href="https://www.facebook.com/AIoTFixer" class="link-card" target="_blank" rel="noopener noreferrer">
@@ -61,7 +66,6 @@
             </nav>
         </div>
 
-        <!-- 轉址狀態介面 (預設隱藏，觸發 Hash 時顯示) -->
         <div id="router-content" class="status-card" style="display: none;" aria-live="polite" aria-atomic="true">
             <div class="loader" id="loader" role="status" aria-label="載入中"></div>
             <div id="msg-container">
