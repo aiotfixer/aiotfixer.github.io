@@ -55,12 +55,13 @@ window.setLanguage = function(lang) {
         }
     });
 
-    const loaderEl = document.getElementById('loader');
-    if (loaderEl) {
-        const errorTitleEl = document.getElementById('error-title');
-        const isErrorVisible = errorTitleEl && errorTitleEl.style.display === 'block';
-        document.title = isErrorVisible ? i18nDict[lang].pageTitle404 : i18nDict[lang].pageTitleRedirect;
-    } else {
+    // 修正點：利用網址判斷當前是否為「純首頁」
+    const path = window.location.pathname;
+    const hashTarget = window.location.hash.replace(/^#\/?/, '').trim();
+    // 條件：路徑為根目錄，且沒有帶任何 Hash 參數
+    const isHome = (path === "/" || path === "/index.html" || path === "") && !hashTarget;
+
+    if (isHome) {
         document.title = i18nDict[lang].pageTitleIndex;
         const metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) metaDesc.setAttribute("content", i18nDict[lang].metaDescIndex);
@@ -69,6 +70,11 @@ window.setLanguage = function(lang) {
         const ogDesc = document.querySelector('meta[property="og:description"]');
         if (ogTitle) ogTitle.setAttribute("content", i18nDict[lang].pageTitleIndex);
         if (ogDesc) ogDesc.setAttribute("content", i18nDict[lang].metaDescIndex);
+    } else {
+        // 跳轉中或錯誤畫面
+        const errorTitleEl = document.getElementById('error-title');
+        const isErrorVisible = errorTitleEl && errorTitleEl.style.display === 'block';
+        document.title = isErrorVisible ? i18nDict[lang].pageTitle404 : i18nDict[lang].pageTitleRedirect;
     }
 };
 
