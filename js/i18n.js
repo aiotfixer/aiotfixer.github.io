@@ -33,7 +33,6 @@ const i18nDict = {
     }
 };
 
-// 穩定性優化：安全讀寫 LocalStorage 的輔助函式
 const storage = {
     get: (key) => {
         try { return localStorage.getItem(key); } 
@@ -41,7 +40,7 @@ const storage = {
     },
     set: (key, val) => {
         try { localStorage.setItem(key, val); } 
-        catch (e) { /* 忽略無痕模式等安全性限制錯誤 */ }
+        catch (e) { }
     }
 };
 
