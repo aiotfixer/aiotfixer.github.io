@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self'; script-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; script-src 'self' https://script.google.com https://script.googleusercontent.com; connect-src 'self' https://script.google.com https://script.googleusercontent.com;">
     
     <title>跳轉中... - NTUT AIoTFixer</title>
     <meta name="robots" content="noindex, nofollow">
     
-    <!-- 靜態備用 Open Graph -->
     <meta property="og:title" content="NTUT AIoTFixer | 北科智慧家電維修社">
     <meta property="og:description" content="北科智慧家電維修社官方短網址與服務導向跳轉頁面。">
     <meta property="og:image" content="https://aiotfixer.github.io/assets/Logo-og.png">
@@ -16,7 +15,6 @@
     <meta property="og:url" content="https://aiotfixer.github.io/">
     <meta property="og:type" content="website">
     
-    <!-- Favicon -->
     <link rel="icon" href="./assets/favicon/favicon.ico" sizes="48x48">
     <link rel="icon" type="image/svg+xml" href="./assets/favicon/favicon.svg">
     <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon/favicon-32x32.png">
@@ -24,11 +22,14 @@
     <link rel="apple-touch-icon" sizes="180x180" href="./assets/favicon/apple-touch-icon.png">
     <link rel="manifest" href="./assets/favicon/site.webmanifest">
     
-    <!-- CSS & JS -->
+    <!-- 預先載入 Logo -->
+    <link rel="preload" href="./assets/Logo.svg" as="image" type="image/svg+xml">
+    
     <link rel="stylesheet" href="./css/style.css">
     <link rel="stylesheet" href="./css/404.css">
     
     <script src="./js/i18n.js" defer></script>
+    <script src="./js/router.js" defer></script>
     <script src="./js/404.js" defer></script>
 </head>
 <body>
@@ -44,10 +45,10 @@
         <div class="status-card" aria-live="polite" aria-atomic="true">
             <div class="loader" id="loader" role="status" aria-label="載入中"></div>
             <div id="msg-container">
-                <div id="error-title" role="heading" aria-level="2">404 Not Found</div>
+                <div id="error-title" role="heading" aria-level="2" style="display: none;">404 Not Found</div>
                 <p id="msg" data-i18n="redirecting">正在解析網址並跳轉...</p>
             </div>
-            <a href="https://aiotfixer.github.io/" class="home-btn" id="home-btn" aria-label="返回首頁" data-i18n="backHome">回到首頁</a>
+            <a href="https://aiotfixer.github.io/" class="home-btn" id="home-btn" aria-label="返回首頁" data-i18n="backHome" style="display: none;">回到首頁</a>
         </div>
 
         <footer>
