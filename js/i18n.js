@@ -2,7 +2,7 @@ const i18nDict = {
     "zh-TW": {
         pageTitleIndex: "NTUT AIoTFixer | 北科智慧家電維修社",
         metaDescIndex: "北科智慧家電研究社 (NTUT AIoTFixer) 官方網站，提供社團最新活動公告、社群平台連結與相關資訊。",
-        pageTitleRedirect: "跳轉中... - NTUT AIoTFixer", // 新增跳轉中標題
+        pageTitleRedirect: "跳轉中... - NTUT AIoTFixer",
         pageTitle404: "404 找不到網頁 - NTUT AIoTFixer",
         
         clubName: "北科智慧家電維修社",
@@ -18,7 +18,7 @@ const i18nDict = {
     "en": {
         pageTitleIndex: "NTUT AIoTFixer Club",
         metaDescIndex: "Official website of NTUT AIoTFixer. Get the latest event announcements, social media links, and club information.",
-        pageTitleRedirect: "Redirecting... - NTUT AIoTFixer", // 新增跳轉中標題
+        pageTitleRedirect: "Redirecting... - NTUT AIoTFixer",
         pageTitle404: "404 Not Found - NTUT AIoTFixer",
         
         clubName: "NTUT AIoTFixer Club",
@@ -33,9 +33,21 @@ const i18nDict = {
     }
 };
 
+// 穩定性優化：安全讀寫 LocalStorage 的輔助函式
+const storage = {
+    get: (key) => {
+        try { return localStorage.getItem(key); } 
+        catch (e) { return null; }
+    },
+    set: (key, val) => {
+        try { localStorage.setItem(key, val); } 
+        catch (e) { /* 忽略無痕模式等安全性限制錯誤 */ }
+    }
+};
+
 window.setLanguage = function(lang) {
     document.documentElement.lang = lang;
-    localStorage.setItem("pref_lang", lang);
+    storage.set("pref_lang", lang);
     
     document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.getAttribute("data-i18n");
@@ -44,17 +56,12 @@ window.setLanguage = function(lang) {
         }
     });
 
-    // 動態替換網頁 Title 與 Meta
     const loaderEl = document.getElementById('loader');
     if (loaderEl) {
-        // 在轉址頁/404頁：透過「錯誤標題是否顯示」來決定瀏覽器分頁要顯示什麼
         const errorTitleEl = document.getElementById('error-title');
         const isErrorVisible = errorTitleEl && errorTitleEl.style.display === 'block';
-        
-        // 若已經觸發錯誤則顯示 404，否則維持跳轉中的標題
         document.title = isErrorVisible ? i18nDict[lang].pageTitle404 : i18nDict[lang].pageTitleRedirect;
     } else {
-        // 在首頁
         document.title = i18nDict[lang].pageTitleIndex;
         const metaDesc = document.querySelector('meta[name="description"]');
         if (metaDesc) metaDesc.setAttribute("content", i18nDict[lang].metaDescIndex);
@@ -67,7 +74,7 @@ window.setLanguage = function(lang) {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-    const savedLang = localStorage.getItem("pref_lang");
+    const savedLang = storage.get("pref_lang");
     const browserLang = navigator.language.toLowerCase().includes("zh") ? "zh-TW" : "en";
     const currentLang = savedLang || browserLang;
     
