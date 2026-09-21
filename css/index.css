@@ -22,11 +22,12 @@
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
+/* 💡 修正懸停色彩，使用科技藍底色與天空淡藍光暈 */
 .link-card:hover, .link-card:focus-visible {
     transform: translateY(-2px);
-    background-color: #2563eb;
-    border-color: #3b82f6;
-    box-shadow: 0 10px 20px -10px rgba(59, 130, 246, 0.5);
-    outline: 2px solid #60a5fa;
+    background-color: #0284c7; /* 深科技藍，提升按壓感 */
+    border-color: #38bdf8;     /* 天空淡藍 */
+    box-shadow: 0 10px 20px -10px rgba(14, 165, 233, 0.5); /* 科技藍陰影 */
+    outline: 2px solid #38bdf8; /* 天空淡藍聚焦框 */
     outline-offset: 2px;
 }
