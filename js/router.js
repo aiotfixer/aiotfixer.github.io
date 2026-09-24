@@ -6,7 +6,7 @@
 window.processRedirect = function(targetKey, showErrorUI) {
     const GAS_URL = "https://script.google.com/macros/s/AKfycbyukWNTiEnbzMmr87n90VoXki4MPXw050wrB4lSNB08cWB9xdGqWoI3J8zbF9O1oQlk/exec";
     const DEFAULT_URL = "https://aiotfixer.github.io/";
-    const CACHE_TTL = 3600000; // 1小時快取限制
+    const CACHE_TTL = 180000; // 3 分鐘快取限制
 
     // 1. 空值或內部檔案防護
     if (!targetKey || targetKey === "index.html" || targetKey === "404.html" || targetKey === "/") {
